@@ -1,0 +1,20 @@
+# JetBrains Rider / IntelliJ
+.idea/
+**/.idea/
+
+# .NET build artifacts
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
