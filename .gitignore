@@ -2,6 +2,9 @@
 .idea/
 **/.idea/
 
+pgdata/
+postgres_catalog/
+
 # .NET build artifacts
 bin/
 obj/
@@ -18,3 +21,23 @@ obj/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Visual Studio
+.vs/
+src/.vs/
+
+# Docker
+docker-compose.override.yml
+pgdata/
+postgres_catalog/
+
+# Local development settings
+launchSettings.json
+*.user
+*.suo
+
+*.original
+
+# Logs
+*.log
+
