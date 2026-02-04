@@ -2,7 +2,7 @@
 using Catalog.API.Products.GetProductById;
 
 namespace Catalog.API.Products.UpdateProduct;
-public record UpdateProductRequest(Guid Id, string Name, List<String> Category, string Description,  string ImageFile, decimal Price)
+public record UpdateProductRequest(Guid Id, string Name, List<String> Category, string Description,  string ImageFile, decimal Price);
 
 public record UpdateProductResponse(bool IsSuccess);
 public class UpdateProductEndpoint : ICarterModule
