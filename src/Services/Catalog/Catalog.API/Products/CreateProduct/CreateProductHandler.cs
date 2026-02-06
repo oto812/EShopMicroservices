@@ -6,11 +6,31 @@ public record CreateProductCommand(string Name, List<string> Category, string  D
 
 public record CreateProductResult(Guid Id);
 
-internal class CreateProductCommandHandler(IDocumentSession session, IValidator<CreateProductCommand> validator)
+public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
+{
+    public CreateProductCommandValidator()
+    {
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Product name is required.")
+            .MaximumLength(100).WithMessage("Product name must not exceed 100 characters.");
+        RuleFor(x => x.Category)
+            .NotEmpty().WithMessage("At least one category is required.");
+        RuleFor(x => x.Description)
+            .NotEmpty().WithMessage("Product description is required.")
+            .MaximumLength(1000).WithMessage("Product description must not exceed 1000 characters.");
+        RuleFor(x => x.ImageFile)
+            .NotEmpty().WithMessage("Image file is required.");
+        RuleFor(x => x.Price)
+            .GreaterThan(0).WithMessage("Price must be greater than zero.");
+    }
+}
+
+internal class CreateProductCommandHandler(IDocumentSession session, ILogger<CreateProductCommand> logger)
     : ICommandHandler<CreateProductCommand, CreateProductResult>
 {
     public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
+        logger.LogInformation($"CreateProductCommandHandler. Handle called with {command}");
 
         var product = new Product
         {

@@ -13,10 +13,7 @@ internal class GetProductByCategoryHandler
         var products = await session.Query<Product>()
             .Where(p => p.Category.Contains(query.Category)).ToListAsync();
 
-        if(products is null)
-        {
-            throw new ProductNotFoundException();
-        }
+       
         return new GetProductByCategoryResult(products);
     }
 }
