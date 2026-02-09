@@ -1,6 +1,5 @@
-﻿namespace Basket.API.Basket.StoreBasket
+﻿namespace Basket.API.Basket.StoreBasket;
+
+public class StoreBasketHandler
 {
-    public class StoreBasketHandler
-    {
-    }
 }
