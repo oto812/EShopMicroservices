@@ -1,3 +1,5 @@
+using BuildingBlocks.Exceptions.Handler;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -20,10 +22,18 @@ builder.Services.AddMarten(opts =>
 
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 
+builder.Services.AddScoped<IBasketRepository>(provider =>
+{
+    var basketRepository = provider.GetRequiredService<BasketRepository>();
+    return new CachedBasketRepository(basketRepository, provider.GetRequiredService<IDistributedCache>());
+});
+
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
 app.MapCarter();
+app.UseExceptionHandler(opt => { });
 
 app.Run();
