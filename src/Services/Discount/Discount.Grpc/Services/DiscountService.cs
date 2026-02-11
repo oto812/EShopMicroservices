@@ -1,27 +1,93 @@
-﻿using Grpc.Core;
+﻿using Discount.Grpc.Data;
+using Discount.Grpc.Models;
+using Grpc.Core;
+using Mapster;
+using Microsoft.EntityFrameworkCore;
 
 namespace Discount.Grpc.Services;
 
-public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
+public class DiscountService
+    (DiscountContext dbContext, ILogger<DiscountService> logger)
+    : DiscountProtoService.DiscountProtoServiceBase
 {
-    public override Task<CouponModel> GetDiscount(GetDiscountRequest request, ServerCallContext context)
+    public override async Task<CouponModel> GetDiscount(GetDiscountRequest request, ServerCallContext context)
     {
         //TODO: GetDiscount from Database
-        return base.GetDiscount(request, context);
+        var coupon = await dbContext
+            .Coupons.FirstOrDefaultAsync(c => c.ProductName == request.ProductName);
+
+        
+            logger.LogInformation("Request ProductName: '{Name}'", request.ProductName);
+
+        
+
+
+        if (coupon is null)
+        {
+            coupon = new Coupon { Amount = 0, Description = "No Discount description", ProductName = "No Discount" };
+        }
+        
+        logger.LogInformation("Discount is retrieved for ProductName: {ProductName}, Amount: {Amount}", coupon.ProductName, coupon.Amount);
+
+        var couponModel = coupon.Adapt<CouponModel>();
+
+        return couponModel;
+
+
     }
-    public override Task<CouponModel> CreateDiscount(CreateDiscountRequest request, ServerCallContext context)
+    public override async Task<CouponModel> CreateDiscount(CreateDiscountRequest request, ServerCallContext context)
     {
-        return base.CreateDiscount(request, context);
+        var coupon = request.Coupon.Adapt<Coupon>();
+
+        if(coupon is null)
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid request object"));
+        }
+        dbContext.Coupons.Add(coupon);
+        await dbContext.SaveChangesAsync();
+
+        logger.LogInformation("Discount is successfully created for ProductName: {ProductName}, Amount: {Amount}", coupon.ProductName, coupon.Amount);
+        
+        var couponModel = coupon.Adapt<CouponModel>();
+
+        return couponModel;
     }
 
-    public override Task<DeleteDiscountResponse> DeleteDiscount(DeleteDiscountRequest request, ServerCallContext context)
+    public override async Task<DeleteDiscountResponse> DeleteDiscount(DeleteDiscountRequest request, ServerCallContext context)
     {
-        return base.DeleteDiscount(request, context);   
+        var coupon = dbContext.Coupons.FirstOrDefault(c => c.ProductName == request.ProductName);
+
+        if(coupon is null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, $"Discount with ProductName '{request.ProductName}' not found"));
+        }
+
+        dbContext.Coupons.Remove(coupon);
+        dbContext.SaveChanges();
+        logger.LogInformation("Discount is successfully deleted for ProductName: {ProductName}", request.ProductName);
+
+        var response = new DeleteDiscountResponse { Success = true };
+        return response;
     }
 
-    public override Task<CouponModel> UpdateDiscount(UpdateDiscountRequest request, ServerCallContext context)
+    public override async Task<CouponModel> UpdateDiscount(UpdateDiscountRequest request, ServerCallContext context)
     {
-        return base.UpdateDiscount(request, context);   
+        var coupon = request.Coupon.Adapt<Coupon>();
+
+        if(coupon is null)
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid request object"));
+        }
+        dbContext.Coupons.Update(coupon);
+        await dbContext.SaveChangesAsync();
+
+        logger.LogInformation("Discount is successfully updated. ProductName : {ProductName} Amount : {Amount} Desciption : {Description}", request.Coupon.ProductName, request.Coupon.Amount, request.Coupon.Description);
+
+        var couponModel = coupon.Adapt<CouponModel>();
+
+        return couponModel;
+
+
     }
     
 }
