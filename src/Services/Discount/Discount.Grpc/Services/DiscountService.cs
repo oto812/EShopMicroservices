@@ -19,6 +19,11 @@ public class DiscountService
         
             logger.LogInformation("Request ProductName: '{Name}'", request.ProductName);
 
+        foreach(var c in dbContext.Coupons)
+        {
+            logger.LogInformation("ProductName: '{Name}'", c.ProductName);
+        }
+
         
 
 
@@ -37,12 +42,14 @@ public class DiscountService
     }
     public override async Task<CouponModel> CreateDiscount(CreateDiscountRequest request, ServerCallContext context)
     {
+
         var coupon = request.Coupon.Adapt<Coupon>();
 
         if(coupon is null)
         {
             throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid request object"));
         }
+
         dbContext.Coupons.Add(coupon);
         await dbContext.SaveChangesAsync();
 
@@ -63,7 +70,9 @@ public class DiscountService
         }
 
         dbContext.Coupons.Remove(coupon);
+
         dbContext.SaveChanges();
+
         logger.LogInformation("Discount is successfully deleted for ProductName: {ProductName}", request.ProductName);
 
         var response = new DeleteDiscountResponse { Success = true };
