@@ -7,7 +7,7 @@ public class Order : Aggregate<OrderId>
     public IReadOnlyList<OrderItem> OrderItems => _orderItems.AsReadOnly();
     public CustomerId CustomerId { get; private set; } = default!;
     public OrderName OrderName { get; private set; } = default!;
-    public Address ShippingAddress { get; private set; } = default!
+    public Address ShippingAddress { get; private set; } = default!;
     public Address BillingAddress { get; private set; } = default!;
     public Payment Payment { get; private set; } = default!;
     public OrderStatus Status { get; private set; } = default!;
@@ -31,7 +31,7 @@ public class Order : Aggregate<OrderId>
             Status = OrderStatus.Pending
         };
 
-        order.AddDomainEvent(new OrderCtearedEvent(order));
+        order.AddDomainEvent(new OrderCreatedEvent(order));
 
         return order;
 
@@ -45,6 +45,8 @@ public class Order : Aggregate<OrderId>
         BillingAddress = BillingAddress;
         Payment = payment;
         Status = status;
+
+        AddDomainEvent(new OrderUpdatedEvent(this));
     }
 
 
