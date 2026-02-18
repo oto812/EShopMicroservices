@@ -8,6 +8,7 @@ public class Payment
     public string CVV { get; } = default!;
     public int PaymentMethod { get; } = default!;
 
+    public Payment() { }
     private Payment(string cardName, string cardNumber, string expiration, string cvv, int paymentMethod)
     {
         CardName = cardName;
