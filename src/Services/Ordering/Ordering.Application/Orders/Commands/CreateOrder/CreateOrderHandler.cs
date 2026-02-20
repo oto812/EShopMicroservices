@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BuildingBlocks.CQRS;
 
-namespace Ordering.Application.Orders.Commands.CreateOrder
+namespace Ordering.Application.Orders.Commands.CreateOrder;
+
+public class CreateOrderHandler : ICommandHandler<CreateOrderCommand, CreateOrderResult>
 {
-    internal class CreateOrderHandler
+    public Task<CreateOrderResult> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
+        //create Order entity from command object
+        //save to database
+        //return result
+        throw new NotImplementedException();
     }
 }
