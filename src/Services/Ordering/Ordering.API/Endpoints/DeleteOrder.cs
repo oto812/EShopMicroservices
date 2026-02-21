@@ -11,7 +11,7 @@ public class DeleteOrder : ICarterModule
     {
         app.MapDelete("orders/{id}", async (Guid id, ISender sender) =>
         {
-            var result = sender.Send(new DeleteOrderCommand(id));
+            var result = await  sender.Send(new DeleteOrderCommand(id));
 
             var response = result.Adapt<DeleteOrderResponse>();
             
