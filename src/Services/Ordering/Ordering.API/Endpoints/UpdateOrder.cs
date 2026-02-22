@@ -6,7 +6,7 @@ namespace Ordering.API.Endpoints;
 
 public record UpdateOrderRequest(OrderDto Order);
 
-public record UpdateOrderResponse(bool IsSucces);
+public record UpdateOrderResponse(bool IsSuccess);
 public class UpdateOrder : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
